@@ -415,9 +415,10 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    // 保存 token 和用户信息
+                    // 保存 token、用户信息和登录状态
                     localStorage.setItem('token', result.data.token);
                     localStorage.setItem('currentUser', JSON.stringify(result.data));
+                    localStorage.setItem('isLoggedIn', 'true');
                     
                     if (rememberMe) {
                         localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
@@ -454,14 +455,17 @@
                 if (response.ok) {
                     const result = await response.json();
                     if (result.success) {
+                        localStorage.setItem('isLoggedIn', 'true');
                         window.location.href = 'home.html';
                     }
                 } else {
                     localStorage.removeItem('token');
                     localStorage.removeItem('currentUser');
+                    localStorage.removeItem('isLoggedIn');
                 }
             } catch (error) {
                 console.error('Token 验证失败:', error);
+                localStorage.removeItem('isLoggedIn');
             }
         }
 

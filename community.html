@@ -152,9 +152,13 @@
     <script>
         // 检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
             const isLoggedIn = localStorage.getItem('isLoggedIn');
-            if (isLoggedIn !== 'true') {
-                window.location.href = 'loogin.html';
+            
+            // 检查 token 或 isLoggedIn 任一有效即可
+            if (!token && isLoggedIn !== 'true') {
+                window.location.href = 'login.html';
+                return;
             }
             
             // 加载预约记录
@@ -164,9 +168,10 @@
         // 退出登录
         document.getElementById('logoutBtn').onclick = function() {
             if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('token');
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('currentUser');
-                window.location.href = 'loogin.html';
+                window.location.href = 'login.html';
             }
         }
 

@@ -76,7 +76,7 @@ const UserUtils = {
     // 跳转到登录页
     redirectToLogin() {
         if (!this.isLoggedIn()) {
-            window.location.href = 'loogin.html';
+            window.location.href = 'login.html';
         }
     }
 };
