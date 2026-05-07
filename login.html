@@ -362,9 +362,7 @@
                 <a href="register.html">创建新账号 →</a>
             </div>
             
-            <div class="login-tip">
-                💡 演示账号：admin / 123456
-            </div>
+            
         </div>
     </div>
 
@@ -388,11 +386,7 @@
                 document.getElementById('rememberMe').checked = true;
             }
             
-            // 自动填充演示账号
-            if (!rememberedUser) {
-                document.getElementById('username').value = 'admin';
-                document.getElementById('password').value = '123456';
-            }
+
         });
 
         // 登录表单提交 - 演示模式（不需要后端）
@@ -411,11 +405,11 @@
             
             // 演示模式：直接登录成功
             const userData = {
-                id: 1,
-                username: username,
-                real_name: username === 'admin' ? '管理员' : username,
-                role: username === 'admin' ? 'admin' : 'user'
-            };
+                    id: Date.now(),
+                    username: username,
+                    real_name: username,
+                    role: 'user'
+                };
             
             localStorage.setItem('token', 'demo-token-' + Date.now());
             localStorage.setItem('currentUser', JSON.stringify(userData));
