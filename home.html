@@ -231,8 +231,10 @@
         <a href="home.html" class="navbar-brand">🌿 桂在安康 - 广西社区健康智能检测与预警</a>
         <ul class="navbar-nav">
             <li><a href="home.html" class="nav-link active">健康数据</a></li>
+            <li><a href="contacts.html" class="nav-link">👥 联系人</a></li>
             <li><a href="community.html" class="nav-link">社区服务</a></li>
             <li><a href="knowledge.html" class="nav-link">健康知识库</a></li>
+            <li><a href="notifications.html" class="nav-link">📬 消息</a></li>
             <li><a href="profile.html" class="nav-link">个人中心</a></li>
             <li><button class="nav-btn" id="logoutBtn">退出登录</button></li>
         </ul>
@@ -257,6 +259,30 @@
             <h3>⚠️ 健康预警</h3>
             <div id="warningList"></div>
             <button class="btn btn-primary mt-20" id="notifyBtn" style="display: none;">📤 发送预警通知</button>
+        </div>
+        
+        <!-- 预警通知对话框 -->
+        <div id="notifyDialog" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>📤 发送预警通知</h2>
+                <p style="margin: 20px 0; color: #666;">
+                    将您的异常健康数据推送给紧急联系人
+                </p>
+                <div class="form-group">
+                    <label class="form-label">选择联系人</label>
+                    <select id="contactSelect" class="form-control">
+                        <option value="">-- 请选择联系人 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">或添加新联系人</label>
+                    <input type="text" id="newContactUsername" class="form-control" placeholder="输入对方用户名">
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="closeNotifyDialog()" style="padding: 10px 30px;">取消</button>
+                    <button class="btn btn-primary" onclick="sendNotification()" style="padding: 10px 30px;">✅ 发送通知</button>
+                </div>
+            </div>
         </div>
 
         <!-- 数据统计卡片 -->
@@ -467,12 +493,20 @@
                         sport: parseInt(item.sport)
                     }));
                     
-                    document.getElementById('loadingChart').style.display = 'none';
-                    document.getElementById('chartGrid').style.display = 'grid';
-                    
-                    initCharts();
-                    updateCharts();
-                    updateWarning();
+                    // 检查是否有数据
+                    if (healthData.length === 0) {
+                        // 没有数据，隐藏图表网格
+                        document.getElementById('loadingChart').style.display = 'none';
+                        document.getElementById('chartGrid').style.display = 'none';
+                    } else {
+                        // 有数据，显示图表
+                        document.getElementById('loadingChart').style.display = 'none';
+                        document.getElementById('chartGrid').style.display = 'grid';
+                        
+                        initCharts();
+                        updateCharts();
+                        updateWarning();
+                    }
                 }
             } catch (error) {
                 console.error('加载健康数据失败:', error);
@@ -513,14 +547,6 @@
                     item: '睡眠',
                     value: data.sleep,
                     threshold: `<6 小时`,
-                    level: 'medium'
-                });
-            }
-            if (data.weight >= 110) {
-                warnings.push({
-                    item: '体重',
-                    value: data.weight,
-                    threshold: `≥110 斤`,
                     level: 'medium'
                 });
             }
@@ -573,8 +599,16 @@
 
         // 更新图表
         function updateCharts() {
+            // 按日期排序
             const sorted = [...healthData].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const dates = sorted.map(i => i.date);
+            
+            // 格式化日期为易读格式（如：05-05）
+            const dates = sorted.map(i => {
+                const date = new Date(i.date);
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${month}-${day}`;
+            });
 
             // 血压趋势图
             charts.bpChart.setOption({
@@ -582,7 +616,16 @@
                 tooltip: { trigger: 'axis' },
                 legend: { data: ['收缩压', '舒张压'], bottom: 0 },
                 grid: { left: '10%', right: '5%', bottom: '15%', top: '15%' },
-                xAxis: { data: dates, axisLabel: { rotate: 45 } },
+                xAxis: { 
+                    type: 'category',
+                    data: dates, 
+                    axisLabel: { 
+                        rotate: 45,
+                        formatter: function(value) {
+                            return '月' + value;
+                        }
+                    } 
+                },
                 yAxis: { type: 'value', name: 'mmHg' },
                 series: [
                     { name: '收缩压', type: 'line', smooth: true, data: sorted.map(i => i.systolic), itemStyle: { color: '#cf1322' } },
@@ -595,7 +638,16 @@
                 title: { text: '血糖趋势', left: 'center', textStyle: { fontSize: 16 } },
                 tooltip: { trigger: 'axis' },
                 grid: { left: '10%', right: '5%', bottom: '15%', top: '15%' },
-                xAxis: { data: dates, axisLabel: { rotate: 45 } },
+                xAxis: { 
+                    type: 'category',
+                    data: dates, 
+                    axisLabel: { 
+                        rotate: 45,
+                        formatter: function(value) {
+                            return '月' + value;
+                        }
+                    } 
+                },
                 yAxis: { type: 'value', name: 'mmol/L' },
                 series: [{ name: '血糖', type: 'line', smooth: true, data: sorted.map(i => i.bloodSugar), itemStyle: { color: '#fa8c16' } }]
             });
@@ -605,7 +657,16 @@
                 title: { text: '体重变化', left: 'center', textStyle: { fontSize: 16 } },
                 tooltip: { trigger: 'axis' },
                 grid: { left: '10%', right: '5%', bottom: '15%', top: '15%' },
-                xAxis: { data: dates, axisLabel: { rotate: 45 } },
+                xAxis: { 
+                    type: 'category',
+                    data: dates, 
+                    axisLabel: { 
+                        rotate: 45,
+                        formatter: function(value) {
+                            return '月' + value;
+                        }
+                    } 
+                },
                 yAxis: { type: 'value', name: '斤' },
                 series: [{ name: '体重', type: 'line', smooth: true, data: sorted.map(i => i.weight), itemStyle: { color: '#722ed1' } }]
             });
@@ -615,7 +676,16 @@
                 title: { text: '睡眠时长', left: 'center', textStyle: { fontSize: 16 } },
                 tooltip: { trigger: 'axis' },
                 grid: { left: '10%', right: '5%', bottom: '15%', top: '15%' },
-                xAxis: { data: dates, axisLabel: { rotate: 45 } },
+                xAxis: { 
+                    type: 'category',
+                    data: dates, 
+                    axisLabel: { 
+                        rotate: 45,
+                        formatter: function(value) {
+                            return '月' + value;
+                        }
+                    } 
+                },
                 yAxis: { type: 'value', name: '小时' },
                 series: [{ name: '睡眠', type: 'bar', data: sorted.map(i => i.sleep), itemStyle: { color: '#52c41a' } }]
             });
@@ -625,7 +695,16 @@
                 title: { text: '每日运动', left: 'center', textStyle: { fontSize: 16 } },
                 tooltip: { trigger: 'axis' },
                 grid: { left: '10%', right: '5%', bottom: '15%', top: '15%' },
-                xAxis: { data: dates, axisLabel: { rotate: 45 } },
+                xAxis: { 
+                    type: 'category',
+                    data: dates, 
+                    axisLabel: { 
+                        rotate: 45,
+                        formatter: function(value) {
+                            return '月' + value;
+                        }
+                    } 
+                },
                 yAxis: { type: 'value', name: '分钟' },
                 series: [{ name: '运动', type: 'bar', data: sorted.map(i => i.sport), itemStyle: { color: '#2d8a5f' } }]
             });
@@ -730,21 +809,22 @@
                 
                 const result = await response.json();
                 if (result.success && result.data && result.data.length > 0) {
-                    const todayRecord = result.data[0];
-                    
-                    const deleteResponse = await fetch(`${API_BASE_URL}/health-data/${todayRecord.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    
-                    const deleteResult = await deleteResponse.json();
-                    if (deleteResult.success) {
-                        alert('✅ 今日数据已重置！');
-                        loadHealthData();
-                        loadStatistics();
+                    // 删除今日所有记录
+                    for (const record of result.data) {
+                        await fetch(`${API_BASE_URL}/health-data/${record.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
                     }
+                    
+                    alert('✅ 今日数据已重置！请重新录入数据。');
+                    // 清空健康数据数组
+                    healthData = [];
+                    // 重新加载数据（会是空数据）
+                    loadHealthData();
+                    loadStatistics();
                 } else {
                     alert('ℹ️ 今日暂无数据记录');
                 }
@@ -763,31 +843,20 @@
             const token = localStorage.getItem('token');
             
             try {
+                // 使用批量删除 API
                 const response = await fetch(`${API_BASE_URL}/health-data`, {
+                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 
                 const result = await response.json();
-                if (result.success && result.data && result.data.length > 0) {
-                    let deletedCount = 0;
-                    
-                    for (const record of result.data) {
-                        try {
-                            await fetch(`${API_BASE_URL}/health-data/${record.id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
-                            deletedCount++;
-                        } catch (error) {
-                            console.error('删除记录失败:', error);
-                        }
-                    }
-                    
-                    alert(`✅ 已成功删除 ${deletedCount} 条记录！`);
+                if (result.success) {
+                    alert(`✅ 已成功删除所有数据！请重新录入数据。`);
+                    // 清空健康数据数组
+                    healthData = [];
+                    // 重新加载数据（会是空数据）
                     loadHealthData();
                     loadStatistics();
                 } else {
@@ -866,6 +935,120 @@
                 document.getElementById('loadingChart').style.display = 'none';
                 document.getElementById('chartGrid').style.display = 'grid';
             }, 500);
+        }
+        
+        // ==================== 预警通知功能 ====================
+        
+        // 显示预警通知对话框
+        document.getElementById('notifyBtn').onclick = function() {
+            loadContacts();
+            document.getElementById('notifyDialog').style.display = 'flex';
+        };
+        
+        // 关闭预警通知对话框
+        function closeNotifyDialog() {
+            document.getElementById('notifyDialog').style.display = 'none';
+        }
+        
+        // 加载联系人列表
+        async function loadContacts() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/contacts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                const select = document.getElementById('contactSelect');
+                select.innerHTML = '<option value="">-- 请选择联系人 --</option>';
+                
+                if (result.success && result.data.length > 0) {
+                    result.data.forEach(contact => {
+                        const option = document.createElement('option');
+                        option.value = contact.contact_username;
+                        option.textContent = contact.contact_username + (contact.relation ? ` (${contact.relation})` : '');
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载联系人失败:', error);
+            }
+        }
+        
+        // 发送预警通知
+        async function sendNotification() {
+            const contactUsername = document.getElementById('contactSelect').value;
+            const newContactUsername = document.getElementById('newContactUsername').value.trim();
+            
+            if (!contactUsername && !newContactUsername) {
+                alert('❌ 请选择联系人或输入新联系人用户名');
+                return;
+            }
+            
+            const targetUsername = contactUsername || newContactUsername;
+            const token = localStorage.getItem('token');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // 获取最新的异常数据（只检测血压、血糖、睡眠）
+            const abnormalData = healthData.filter(item => {
+                return item.systolic >= 140 || item.diastolic >= 90 || 
+                       item.bloodSugar >= 6.1 || item.sleep < 6;
+            });
+            
+            if (abnormalData.length === 0) {
+                alert('ℹ️ 暂无异常数据需要推送');
+                closeNotifyDialog();
+                return;
+            }
+            
+            try {
+                // 如果是新联系人，先添加
+                if (!contactUsername && newContactUsername) {
+                    await fetch(`${API_BASE_URL}/contacts`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            contact_username: newContactUsername,
+                            relation: '紧急联系人'
+                        })
+                    });
+                }
+                
+                // 发送通知
+                const response = await fetch(`${API_BASE_URL}/notifications`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        to_username: targetUsername,
+                        type: 'health_warning',
+                        title: '健康预警通知',
+                        message: `用户 ${currentUser.username} 的 health 数据出现异常，请及时查看！`,
+                        data: {
+                            warnings: abnormalData.slice(-5) // 最近 5 条异常数据
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ 预警通知已发送给 ${targetUsername}！`);
+                    closeNotifyDialog();
+                } else {
+                    alert('❌ 发送失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('发送通知失败:', error);
+                alert('❌ 发送失败，请重试');
+            }
         }
     </script>
 </body>

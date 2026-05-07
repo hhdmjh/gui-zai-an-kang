@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/upstream-config",
+  "Name": "桂在安康后端",
+  "Description": "健康管理系统后端服务",
+  "repository": "https://github.com/你的用户名/gui-zai-an-kang",
+  "env": {
+    "NODE_ENV": "production",
+    "JWT_SECRET": "your-secret-key-change-in-production",
+    "PORT": "3001"
+  },
+  "build": {
+    "root": "backend",
+    "command": "npm install"
+  },
+  "start": {
+    "root": "backend",
+    "command": "node demo-server.js"
+  }
+}

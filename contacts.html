@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紧急联系人 - 桂在安康</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .contact-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #2d8a5f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .contact-relation {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .contact-added-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 13px;
+            border-radius: 6px;
+        }
+        
+        .btn-danger {
+            background: #cf1322;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #d9363e;
+        }
+        
+        .add-contact-form {
+            background: linear-gradient(135deg, #f0f9f4 0%, #e6f7ef 100%);
+            border: 2px solid #2d8a5f;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .form-inline {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        
+        .form-inline .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="home.html" class="navbar-brand">🌿 桂在安康</a>
+        <ul class="navbar-nav">
+            <li><a href="home.html" class="nav-link">健康数据</a></li>
+            <li><a href="community.html" class="nav-link">社区服务</a></li>
+            <li><a href="knowledge.html" class="nav-link">健康知识库</a></li>
+            <li><a href="notifications.html" class="nav-link">📬 消息</a></li>
+            <li><a href="profile.html" class="nav-link">个人中心</a></li>
+            <li><button class="nav-btn" id="logoutBtn">退出登录</button></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">👥 紧急联系人管理</h1>
+        
+        <!-- 添加联系人表单 -->
+        <div class="add-contact-form">
+            <h2 style="margin-bottom: 15px; color: #2d8a5f;">➕ 添加联系人</h2>
+            <p style="color: #666; margin-bottom: 20px;">添加紧急联系人，当健康数据异常时可以推送预警通知</p>
+            <form id="addContactForm" onsubmit="return false;">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="form-label">联系人用户名 <span style="color: #cf1322;">*</span></label>
+                        <input type="text" id="contactUsername" class="form-control" placeholder="输入对方的用户名" required>
+                        <div class="help-text">对方注册的用户名，用于接收预警通知</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">关系</label>
+                        <select id="contactRelation" class="form-control">
+                            <option value="">选择关系</option>
+                            <option value="家属">家属</option>
+                            <option value="配偶">配偶</option>
+                            <option value="子女">子女</option>
+                            <option value="父母">父母</option>
+                            <option value="朋友">朋友</option>
+                            <option value="医生">医生</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">✅ 添加联系人</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 联系人列表 -->
+        <div style="margin-bottom: 20px;">
+            <h2 style="color: #333; margin-bottom: 15px;">📋 我的联系人</h2>
+        </div>
+        
+        <div id="contactList">
+            <div class="loading" id="loadingContacts">
+                <div class="spinner"></div>
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // 检查登录状态
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            loadContacts();
+        });
+        
+        // 退出登录
+        document.getElementById('logoutBtn').onclick = function() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        };
+        
+        // 加载联系人列表
+        async function loadContacts() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/contacts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                document.getElementById('loadingContacts').style.display = 'none';
+                
+                if (result.success && result.data.length > 0) {
+                    displayContacts(result.data);
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('加载联系人失败:', error);
+                document.getElementById('contactList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">😢</div>
+                        <p>加载失败，请刷新重试</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 显示联系人列表
+        function displayContacts(contacts) {
+            const container = document.getElementById('contactList');
+            
+            container.innerHTML = contacts.map(contact => `
+                <div class="contact-card">
+                    <div class="contact-info">
+                        <div class="contact-name">👤 ${contact.contact_username}</div>
+                        ${contact.relation ? `<div class="contact-relation">关系：${contact.relation}</div>` : ''}
+                        <div class="contact-added-time">添加时间：${formatTime(contact.created_at)}</div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-primary btn-sm" onclick="sendTestNotification('${contact.contact_username}')">📨 测试推送</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteContact(${contact.id})">🗑️ 删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 显示空状态
+        function showEmptyState() {
+            document.getElementById('contactList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>暂无联系人</p>
+                    <p style="margin-top: 10px; font-size: 14px;">添加第一个紧急联系人，当健康数据异常时接收预警通知</p>
+                </div>
+            `;
+        }
+        
+        // 添加联系人
+        document.getElementById('addContactForm').addEventListener('submit', async function() {
+            const username = document.getElementById('contactUsername').value.trim();
+            const relation = document.getElementById('contactRelation').value;
+            const token = localStorage.getItem('token');
+            
+            if (!username) {
+                alert('❌ 请输入联系人用户名');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/contacts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        contact_username: username,
+                        relation: relation
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ 成功添加联系人 ${username}！`);
+                    document.getElementById('contactUsername').value = '';
+                    document.getElementById('contactRelation').value = '';
+                    loadContacts();
+                } else {
+                    alert('❌ 添加失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('添加失败:', error);
+                alert('❌ 添加失败，请重试');
+            }
+        });
+        
+        // 删除联系人
+        async function deleteContact(id) {
+            if (!confirm('确定要删除这个联系人吗？')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/contacts/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ 联系人已删除');
+                    loadContacts();
+                } else {
+                    alert('❌ 删除失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('删除失败:', error);
+                alert('❌ 删除失败，请重试');
+            }
+        }
+        
+        // 发送测试通知
+        async function sendTestNotification(toUsername) {
+            if (!confirm(`确定要给 ${toUsername} 发送测试通知吗？`)) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        to_username: toUsername,
+                        type: 'test',
+                        title: '测试通知',
+                        message: `你好！这是来自 ${currentUser.username} 的测试消息，用于验证预警推送功能是否正常工作。`,
+                        data: {
+                            test: true
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ 测试通知已发送给 ${toUsername}！`);
+                } else {
+                    alert('❌ 发送失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('发送失败:', error);
+                alert('❌ 发送失败，请重试');
+            }
+        }
+        
+        // 格式化时间
+        function formatTime(timeStr) {
+            const time = new Date(timeStr);
+            const now = new Date();
+            const diff = now - time;
+            
+            if (diff < 60000) { // 1 分钟内
+                return '刚刚';
+            } else if (diff < 3600000) { // 1 小时内
+                return Math.floor(diff / 60000) + '分钟前';
+            } else if (diff < 86400000) { // 24 小时内
+                return Math.floor(diff / 3600000) + '小时前';
+            } else {
+                return time.toLocaleDateString('zh-CN', { 
+                    year: 'numeric',
+                    month: '2-digit', 
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+    </script>
+</body>
+</html>

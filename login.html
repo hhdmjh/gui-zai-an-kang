@@ -389,7 +389,7 @@
 
         });
 
-        // 登录表单提交 - 演示模式（不需要后端）
+        // 登录表单提交 - 真实后端模式
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -403,26 +403,43 @@
             
             hideMessages();
             
-            // 演示模式：直接登录成功
-            const userData = {
-                    id: Date.now(),
-                    username: username,
-                    real_name: username,
-                    role: 'user'
-                };
-            
-            localStorage.setItem('token', 'demo-token-' + Date.now());
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-            
-            if (rememberMe) {
-                localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 保存 token 和用户信息
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(result.data));
+                    
+                    if (rememberMe) {
+                        localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+                    }
+                    
+                    showSuccess('登录成功！正在跳转...');
+                    
+                    // 跳转到真实的数据页面
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1000);
+                } else {
+                    showError(result.message || '登录失败');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '立即登录';
+                }
+            } catch (error) {
+                console.error('登录失败:', error);
+                showError('网络错误，请检查后端服务是否运行');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '立即登录';
             }
-            
-            showSuccess('登录成功（演示模式）！正在跳转...');
-            
-            setTimeout(() => {
-                window.location.href = 'demo.html'; // 跳转到演示页面
-            }, 1000);
         });
 
         // 验证 token
