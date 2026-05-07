@@ -380,18 +380,15 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // 纯前端模式 - 不需要后端
         
         // 检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
                 window.location.href = 'login.html';
                 return;
             }
-            
-            // 验证 token
-            validateToken(token);
             
             // 设置默认日期为今天
             document.getElementById('recordDate').valueAsDate = new Date();
@@ -401,51 +398,45 @@
             loadStatistics();
         });
 
-        // 验证 token
-        async function validateToken(token) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/user/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('currentUser');
-                    window.location.href = 'login.html';
-                }
-            } catch (error) {
-                console.error('Token 验证失败:', error);
-            }
-        }
-
         // 退出登录
         document.getElementById('logoutBtn').onclick = function() {
             if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             }
         }
 
         // 加载统计数据
-        async function loadStatistics() {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_BASE_URL}/statistics`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+        function loadStatistics() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            if (!currentUser) return;
+            
+            const stats = {
+                total_records: healthData.length,
+                averages: {}
+            };
+            
+            if (healthData.length > 0) {
+                // 计算平均值
+                const sum = healthData.reduce((acc, item) => {
+                    acc.systolic += parseFloat(item.systolic || 0);
+                    acc.diastolic += parseFloat(item.diastolic || 0);
+                    acc.bloodSugar += parseFloat(item.bloodSugar || item.blood_sugar || 0);
+                    acc.sleep += parseFloat(item.sleep || 0);
+                    return acc;
+                }, { systolic: 0, diastolic: 0, bloodSugar: 0, sleep: 0 });
                 
-                const result = await response.json();
-                if (result.success && result.data) {
-                    updateStatistics(result.data);
-                }
-            } catch (error) {
-                console.error('加载统计数据失败:', error);
+                const count = healthData.length;
+                stats.averages.avg_systolic = sum.systolic / count;
+                stats.averages.avg_diastolic = sum.diastolic / count;
+                stats.averages.avg_blood_sugar = sum.bloodSugar / count;
+                stats.averages.avg_sleep = sum.sleep / count;
             }
+            
+            updateStatistics(stats);
         }
 
         // 更新统计显示
@@ -472,45 +463,22 @@
         let healthData = [];
         let charts = {};
 
-        async function loadHealthData() {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_BASE_URL}/health-data`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+        function loadHealthData() {
+            // 从 LocalStorage 加载数据
+            healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            
+            if (healthData.length === 0) {
+                // 没有数据，隐藏图表
+                document.getElementById('loadingChart').style.display = 'none';
+                document.getElementById('chartGrid').style.display = 'none';
+            } else {
+                // 有数据，显示图表
+                document.getElementById('loadingChart').style.display = 'none';
+                document.getElementById('chartGrid').style.display = 'grid';
                 
-                const result = await response.json();
-                if (result.success) {
-                    healthData = result.data.map(item => ({
-                        date: item.record_date,
-                        systolic: parseFloat(item.systolic),
-                        diastolic: parseFloat(item.diastolic),
-                        bloodSugar: parseFloat(item.blood_sugar),
-                        sleep: parseFloat(item.sleep),
-                        weight: parseFloat(item.weight),
-                        sport: parseInt(item.sport)
-                    }));
-                    
-                    // 检查是否有数据
-                    if (healthData.length === 0) {
-                        // 没有数据，隐藏图表网格
-                        document.getElementById('loadingChart').style.display = 'none';
-                        document.getElementById('chartGrid').style.display = 'none';
-                    } else {
-                        // 有数据，显示图表
-                        document.getElementById('loadingChart').style.display = 'none';
-                        document.getElementById('chartGrid').style.display = 'grid';
-                        
-                        initCharts();
-                        updateCharts();
-                        updateWarning();
-                    }
-                }
-            } catch (error) {
-                console.error('加载健康数据失败:', error);
-                document.getElementById('loadingChart').innerHTML = '<p>加载失败，请刷新重试</p>';
+                initCharts();
+                updateCharts();
+                updateWarning();
             }
         }
 
@@ -711,52 +679,58 @@
         }
 
         // 提交表单
-        document.getElementById('dataForm').addEventListener('submit', async function(e) {
+        document.getElementById('dataForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const token = localStorage.getItem('token');
             const submitBtn = e.target.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.textContent = '提交中...';
+            submitBtn.textContent = '⏳ 提交中...';
             
             const data = {
-                record_date: document.getElementById('recordDate').value,
-                systolic: parseFloat(document.getElementById('systolic').value),
-                diastolic: parseFloat(document.getElementById('diastolic').value),
-                blood_sugar: parseFloat(document.getElementById('bloodSugar').value),
-                sleep: parseFloat(document.getElementById('sleep').value),
-                weight: parseFloat(document.getElementById('weight').value),
-                sport: parseInt(document.getElementById('sport').value)
+                date: document.getElementById('recordDate').value,
+                systolic: document.getElementById('systolic').value,
+                diastolic: document.getElementById('diastolic').value,
+                bloodSugar: document.getElementById('bloodSugar').value,
+                sleep: document.getElementById('sleep').value,
+                weight: document.getElementById('weight').value,
+                sport: document.getElementById('sport').value
             };
             
-            try {
-                const response = await fetch(`${API_BASE_URL}/health-data`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('✅ 数据提交成功！');
-                    this.reset();
-                    document.getElementById('recordDate').valueAsDate = new Date();
-                    loadHealthData();
-                    loadStatistics();
-                } else {
-                    alert('❌ 提交失败：' + result.message);
-                }
-            } catch (error) {
-                console.error('提交失败:', error);
-                alert('❌ 网络错误，请检查后端服务');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ 提交数据';
+            // 保存到 LocalStorage
+            let healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            
+            // 检查是否已有今天的数据
+            const existingIndex = healthData.findIndex(item => item.date === data.date);
+            
+            const newRecord = {
+                date: data.date,
+                systolic: data.systolic,
+                diastolic: data.diastolic,
+                bloodSugar: data.bloodSugar,
+                sleep: data.sleep,
+                weight: data.weight,
+                sport: data.sport,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (existingIndex >= 0) {
+                // 更新已有数据
+                healthData[existingIndex] = newRecord;
+            } else {
+                // 添加新数据
+                healthData.push(newRecord);
             }
+            
+            localStorage.setItem('healthData', JSON.stringify(healthData));
+            
+            alert('✅ 数据提交成功！');
+            this.reset();
+            document.getElementById('recordDate').valueAsDate = new Date();
+            loadHealthData();
+            loadStatistics();
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = '✅ 提交数据';
         });
 
         // 窗口大小改变时自适应

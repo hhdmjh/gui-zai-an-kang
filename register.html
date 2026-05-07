@@ -370,7 +370,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // 纯前端模式 - 不需要后端
         
         // 密码强度检查
         document.getElementById('password').addEventListener('input', (e) => {
@@ -401,8 +401,8 @@
             }
         });
         
-        // 注册表单提交
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        // 注册表单提交 - 纯前端模式
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
             const username = document.getElementById('username').value.trim();
@@ -419,46 +419,39 @@
             
             hideMessages();
             
-            // 构建注册数据（只传递必填项和非空选填项）
-            const registerData = {
-                username,
-                password
-            };
+            // 检查用户是否已存在
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const existingUser = users.find(u => u.username === username);
             
-            // 只添加非空的选填字段
-            if (realName) registerData.real_name = realName;
-            if (phone) registerData.phone = phone;
-            if (email) registerData.email = email;
-            if (gender) registerData.gender = gender;
-            if (age) registerData.age = age;
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(registerData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
+            setTimeout(() => {
+                if (existingUser) {
+                    showError('用户名已存在');
+                    registerBtn.disabled = false;
+                    registerBtn.innerHTML = '立即注册';
+                } else {
+                    // 保存新用户
+                    const newUser = {
+                        username,
+                        password,
+                        name: realName,
+                        phone,
+                        email,
+                        gender,
+                        age,
+                        id: Date.now(),
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    users.push(newUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
                     showSuccess('注册成功！即将跳转到登录页面...');
                     
                     setTimeout(() => {
                         window.location.href = 'login.html';
                     }, 1500);
-                } else {
-                    showError(result.message || '注册失败');
                 }
-            } catch (error) {
-                console.error('注册错误:', error);
-                showError('网络错误，请检查后端服务是否启动');
-            } finally {
-                registerBtn.disabled = false;
-                registerBtn.innerHTML = '立即注册';
-            }
+            }, 500);
         });
 
         function showError(message) {
