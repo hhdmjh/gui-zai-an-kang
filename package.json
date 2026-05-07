@@ -1,0 +1,20 @@
+{
+  "name": "桂在安康",
+  "version": "1.0.0",
+  "description": "广西社区健康智能检测与预警平台",
+  "main": "backend/demo-server.js",
+  "scripts": {
+    "start": "node backend/demo-server.js",
+    "dev": "node backend/demo-server.js"
+  },
+  "keywords": ["health", "community", "guangxi"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

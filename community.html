@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桂在安康 - 社区服务</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="home.html" class="navbar-brand">🌿 桂在安康</a>
+        <ul class="navbar-nav">
+            <li><a href="home.html" class="nav-link">健康数据</a></li>
+            <li><a href="community.html" class="nav-link active">社区服务</a></li>
+            <li><a href="knowledge.html" class="nav-link">健康知识库</a></li>
+            <li><button class="nav-btn" id="logoutBtn">退出登录</button></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">🏥 社区健康服务</h1>
+
+        <!-- 服务卡片 -->
+        <div class="card">
+            <h2 class="card-title">💁 服务项目</h2>
+            <div class="service-grid">
+                <!-- 上门体检预约 -->
+                <div class="service-card">
+                    <div class="service-icon">🏠</div>
+                    <h3>上门体检预约</h3>
+                    <p>专业医护人员上门为您提供全面的健康体检服务，包括血压、血糖、心电图等基础检查。</p>
+                    <button class="btn btn-primary btn-lg" onclick="showAppointmentModal()">立即预约</button>
+                </div>
+
+                <!-- 健康咨询 -->
+                <div class="service-card">
+                    <div class="service-icon">👨‍⚕️</div>
+                    <h3>健康咨询</h3>
+                    <p>在线对接社区医生，为您提供专业的健康咨询服务，解答您的健康问题。</p>
+                    <button class="btn btn-secondary btn-lg" onclick="showConsultModal()">开始咨询</button>
+                </div>
+
+                <!-- 机构查询 -->
+                <div class="service-card">
+                    <div class="service-icon">📍</div>
+                    <h3>养老机构查询</h3>
+                    <p>查询广西各地养老服务机构信息，包括地址、联系方式、服务项目等。</p>
+                    <button class="btn btn-success btn-lg" onclick="showInstitutionsModal()">查看机构</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预约记录 -->
+        <div class="card">
+            <h2 class="card-title">📋 我的预约记录</h2>
+            <div id="appointmentList">
+                <p style="text-align: center; color: #999; padding: 40px;">暂无预约记录</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预约模态框 -->
+    <div class="modal" id="appointmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏠 上门体检预约</h2>
+                <button class="modal-close" onclick="closeModal('appointmentModal')">&times;</button>
+            </div>
+            <form id="appointmentForm" style="display: grid; gap: 20px;">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" id="aptName" class="form-control" placeholder="请输入您的姓名" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系电话</label>
+                    <input type="tel" id="aptPhone" class="form-control" placeholder="请输入您的手机号" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">预约日期</label>
+                    <input type="date" id="aptDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">预约时间段</label>
+                    <select id="aptTime" class="form-control" required>
+                        <option value="">请选择时间段</option>
+                        <option value="上午 9:00-11:00">上午 9:00-11:00</option>
+                        <option value="下午 14:00-16:00">下午 14:00-16:00</option>
+                        <option value="下午 16:00-18:00">下午 16:00-18:00</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">详细地址</label>
+                    <textarea id="aptAddress" class="form-control" rows="3" placeholder="请输入详细上门地址" required style="width: 100%; padding: 14px 18px; font-size: 18px; border: 2px solid #d0d0d0; border-radius: 10px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注说明</label>
+                    <textarea id="aptRemark" class="form-control" rows="2" placeholder="如有特殊需求请说明（选填）" style="width: 100%; padding: 14px 18px; font-size: 18px; border: 2px solid #d0d0d0; border-radius: 10px;"></textarea>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn" style="background: #f0f0f0;" onclick="closeModal('appointmentModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">提交预约</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 咨询模态框 -->
+    <div class="modal" id="consultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👨‍⚕️ 健康咨询</h2>
+                <button class="modal-close" onclick="closeModal('consultModal')">&times;</button>
+            </div>
+            <div style="text-align: center; padding: 30px;">
+                <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #2d8a5f, #36a88d); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 60px;">
+                    👨‍⚕️
+                </div>
+                <h3 style="color: #2d8a5f; margin-bottom: 10px;">张医生</h3>
+                <p style="color: #666; margin-bottom: 30px;">社区卫生服务中心 | 全科医生</p>
+                
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: left;">
+                    <p><strong>擅长领域：</strong>老年常见病、慢性病管理、健康咨询</p>
+                    <p><strong>执业年限：</strong>15 年</p>
+                    <p><strong>服务评价：</strong>⭐⭐⭐⭐⭐ 4.9/5.0</p>
+                </div>
+
+                <div style="display: grid; gap: 15px;">
+                    <button class="btn btn-primary btn-lg" onclick="startConsult()">
+                        📞 电话咨询
+                    </button>
+                    <button class="btn btn-secondary btn-lg" onclick="messageConsult()">
+                        💬 在线咨询
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 机构信息模态框 -->
+    <div class="modal" id="institutionsModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>📍 广西养老服务机构</h2>
+                <button class="modal-close" onclick="closeModal('institutionsModal')">&times;</button>
+            </div>
+            <div id="institutionList" style="display: grid; gap: 20px;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
+                window.location.href = 'loogin.html';
+            }
+            
+            // 加载预约记录
+            loadAppointments();
+        });
+
+        // 退出登录
+        document.getElementById('logoutBtn').onclick = function() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                window.location.href = 'loogin.html';
+            }
+        }
+
+        // 模态框控制
+        function showAppointmentModal() {
+            document.getElementById('appointmentModal').classList.add('show');
+            // 设置最小日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('aptDate').min = today;
+        }
+
+        function showConsultModal() {
+            document.getElementById('consultModal').classList.add('show');
+        }
+
+        function showInstitutionsModal() {
+            document.getElementById('institutionsModal').classList.add('show');
+            loadInstitutions();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // 关闭模态框（点击背景）
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        // 预约表单提交
+        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const appointment = {
+                id: Date.now(),
+                name: document.getElementById('aptName').value,
+                phone: document.getElementById('aptPhone').value,
+                date: document.getElementById('aptDate').value,
+                time: document.getElementById('aptTime').value,
+                address: document.getElementById('aptAddress').value,
+                remark: document.getElementById('aptRemark').value,
+                status: '已提交',
+                createTime: new Date().toLocaleString('zh-CN')
+            };
+            
+            // 保存到本地存储
+            let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+            appointments.push(appointment);
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+            
+            // 关闭模态框
+            closeModal('appointmentModal');
+            
+            // 重置表单
+            this.reset();
+            
+            // 刷新预约列表
+            loadAppointments();
+            
+            // 显示成功提示
+            alert('✅ 预约成功！\n\n工作人员会在 24 小时内与您联系确认，请保持电话畅通。');
+        });
+
+        // 加载预约记录
+        function loadAppointments() {
+            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+            const listEl = document.getElementById('appointmentList');
+            
+            if (appointments.length === 0) {
+                listEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">暂无预约记录</p>';
+                return;
+            }
+            
+            // 按创建时间倒序排列
+            appointments.sort((a, b) => b.id - a.id);
+            
+            listEl.innerHTML = appointments.map(apt => `
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #2d8a5f;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <strong style="font-size: 18px;">${apt.name}</strong>
+                        <span style="background: #52c41a; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px;">${apt.status}</span>
+                    </div>
+                    <p style="margin: 8px 0; color: #666;">📅 预约时间：${apt.date} ${apt.time}</p>
+                    <p style="margin: 8px 0; color: #666;">📍 上门地址：${apt.address}</p>
+                    <p style="margin: 8px 0; color: #666;">📱 联系电话：${apt.phone}</p>
+                    ${apt.remark ? `<p style="margin: 8px 0; color: #666;">📝 备注：${apt.remark}</p>` : ''}
+                    <p style="margin: 8px 0; color: #999; font-size: 14px;">创建时间：${apt.createTime}</p>
+                </div>
+            `).join('');
+        }
+
+        // 加载机构信息
+        function loadInstitutions() {
+            const institutions = [
+                {
+                    name: '南宁市第一养老院',
+                    address: '南宁市青秀区民族大道 88 号',
+                    phone: '0771-12345678',
+                    services: ['生活照料', '医疗护理', '康复保健', '文化娱乐'],
+                    rating: 4.8
+                },
+                {
+                    name: '桂林市夕阳红养老中心',
+                    address: '桂林市秀峰区中山中路 156 号',
+                    phone: '0773-87654321',
+                    services: ['居家养老', '日间照料', '营养配餐', '心理关怀'],
+                    rating: 4.7
+                },
+                {
+                    name: '柳州市康乐养老院',
+                    address: '柳州市城中区解放北路 66 号',
+                    phone: '0772-55667788',
+                    services: ['全护理', '半护理', '临终关怀', '康复训练'],
+                    rating: 4.6
+                },
+                {
+                    name: '梧州市福寿园老年公寓',
+                    address: '梧州市万秀区蝶山一路 28 号',
+                    phone: '0774-33445566',
+                    services: ['机构养老', '社区服务', '医养结合', '智慧养老'],
+                    rating: 4.5
+                },
+                {
+                    name: '北海市银滩养老度假基地',
+                    address: '北海市银海区银滩大道 168 号',
+                    phone: '0779-99887766',
+                    services: ['度假养老', '候鸟式养老', '温泉疗养', '海滨休闲'],
+                    rating: 4.9
+                },
+                {
+                    name: '玉林市仁爱家园',
+                    address: '玉林市玉州区人民中路 99 号',
+                    phone: '0775-22334455',
+                    services: ['失智照护', '康复护理', '营养膳食', '社工服务'],
+                    rating: 4.6
+                }
+            ];
+            
+            const listEl = document.getElementById('institutionList');
+            listEl.innerHTML = institutions.map(inst => `
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border-left: 4px solid #2d8a5f;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                        <h3 style="color: #2d8a5f; margin: 0;">${inst.name}</h3>
+                        <span style="color: #fa8c16; font-size: 18px;">${'⭐'.repeat(Math.floor(inst.rating))}${inst.rating % 1 >= 0.5 ? '½' : ''} ${inst.rating}</span>
+                    </div>
+                    <p style="margin: 10px 0; color: #666;">📍 地址：${inst.address}</p>
+                    <p style="margin: 10px 0; color: #666;">📞 电话：<strong>${inst.phone}</strong></p>
+                    <div style="margin: 10px 0;">
+                        <span style="color: #666; margin-right: 10px;">服务项目：</span>
+                        ${inst.services.map(s => `<span style="display: inline-block; background: #e6f7ff; color: #1890ff; padding: 4px 12px; border-radius: 15px; margin: 5px 5px 0 0; font-size: 14px;">${s}</span>`).join('')}
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="navigateTo('${inst.address}')">
+                        🗺️ 导航到这里
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // 导航功能（模拟）
+        function navigateTo(address) {
+            alert(`🗺️ 即将导航到：${address}\n\n（实际应用中会调用地图 API）`);
+        }
+
+        // 开始电话咨询
+        function startConsult() {
+            alert('📞 正在拨打张医生电话：138****5678\n\n通话时长将计入健康服务记录');
+            closeModal('consultModal');
+        }
+
+        // 在线咨询
+        function messageConsult() {
+            alert('💬 正在连接在线客服...\n\n（实际应用中会打开聊天窗口）');
+            closeModal('consultModal');
+        }
+    </script>
+</body>
+</html>

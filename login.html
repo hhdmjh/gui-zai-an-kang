@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桂在安康 - 登录</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2d8a5f 0%, #36a88d 50%, #2d8a5f 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            bottom: -50px;
+            left: -50px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-logo {
+            font-size: 64px;
+            margin-bottom: 15px;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .login-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2d8a5f;
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+        }
+        
+        .input-icon {
+            font-size: 20px;
+            color: #999;
+            transition: color 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #2d8a5f;
+            box-shadow: 0 0 0 3px rgba(45, 138, 95, 0.1);
+        }
+        
+        .input-group input:focus + .input-icon {
+            color: #2d8a5f;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2d8a5f 0%, #36a88d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 138, 95, 0.3);
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 138, 95, 0.4);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            color: #2d8a5f;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password:hover {
+            color: #36a88d;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .divider span {
+            position: relative;
+            background: white;
+            padding: 0 15px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .register-link {
+            text-align: center;
+            font-size: 15px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #2d8a5f;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .login-tip {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f9f4;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #2d8a5f;
+        }
+        
+        .error-message {
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #cf1322;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 40px 30px;
+            }
+            
+            .login-title {
+                font-size: 28px;
+            }
+            
+            .login-logo {
+                font-size: 56px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-logo">🌿</div>
+                <h1 class="login-title">桂在安康</h1>
+                <p class="login-subtitle">个人健康监测平台</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">用户名</label>
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="username" placeholder="请输入用户名" autocomplete="off" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">密码</label>
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" placeholder="请输入密码" required>
+                </div>
+                
+                <div class="login-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>记住我</span>
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showMessage('请联系管理员重置密码', 'info'); return false;">忘记密码？</a>
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    立即登录
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>还没有账号？</span>
+            </div>
+            
+            <div class="register-link">
+                立即注册
+                <a href="register.html">创建新账号 →</a>
+            </div>
+            
+            <div class="login-tip">
+                💡 演示账号：admin / 123456
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // 页面加载时检查登录状态和记住我功能
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // 验证 token 是否有效
+                validateToken(token);
+            }
+            
+            // 自动填充记住我的账号
+            const rememberedUser = localStorage.getItem('rememberedUser');
+            if (rememberedUser) {
+                const user = JSON.parse(rememberedUser);
+                document.getElementById('username').value = user.username;
+                document.getElementById('password').value = user.password;
+                document.getElementById('rememberMe').checked = true;
+            }
+            
+            // 自动填充演示账号
+            if (!rememberedUser) {
+                document.getElementById('username').value = 'admin';
+                document.getElementById('password').value = '123456';
+            }
+        });
+
+        // 登录表单提交 - 演示模式（不需要后端）
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading"></span>登录中...';
+            
+            hideMessages();
+            
+            // 演示模式：直接登录成功
+            const userData = {
+                id: 1,
+                username: username,
+                real_name: username === 'admin' ? '管理员' : username,
+                role: username === 'admin' ? 'admin' : 'user'
+            };
+            
+            localStorage.setItem('token', 'demo-token-' + Date.now());
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            
+            if (rememberMe) {
+                localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+            }
+            
+            showSuccess('登录成功（演示模式）！正在跳转...');
+            
+            setTimeout(() => {
+                window.location.href = 'demo.html'; // 跳转到演示页面
+            }, 1000);
+        });
+
+        // 验证 token
+        async function validateToken(token) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = 'home.html';
+                    }
+                } else {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('currentUser');
+                }
+            } catch (error) {
+                console.error('Token 验证失败:', error);
+            }
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showMessage(message, type = 'info') {
+            if (type === 'error') {
+                showError(message);
+            } else if (type === 'success') {
+                showSuccess(message);
+            }
+        }
+    </script>
+</body>
+</html>

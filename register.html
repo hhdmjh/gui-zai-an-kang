@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桂在安康 - 注册</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2d8a5f 0%, #36a88d 50%, #2d8a5f 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .register-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .register-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .register-logo {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+        
+        .register-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2d8a5f;
+            margin-bottom: 8px;
+        }
+        
+        .register-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .input-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #2d8a5f;
+            box-shadow: 0 0 0 3px rgba(45, 138, 95, 0.1);
+        }
+        
+        .input-group input:focus + .input-icon {
+            color: #2d8a5f;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .strength-weak { background: #cf1322; width: 33%; }
+        .strength-medium { background: #fa8c16; width: 66%; }
+        .strength-strong { background: #52c41a; width: 100%; }
+        
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2d8a5f 0%, #36a88d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 138, 95, 0.3);
+            margin-top: 10px;
+        }
+        
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 138, 95, 0.4);
+        }
+        
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .login-link a {
+            color: #2d8a5f;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #cf1322;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .register-box {
+                padding: 35px 25px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-box">
+            <div class="register-header">
+                <div class="register-logo">🌿</div>
+                <h1 class="register-title">创建账号</h1>
+                <p class="register-subtitle">加入桂在安康，开启健康生活</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="username">用户名</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="username" placeholder="请输入用户名">
+                            <span class="input-icon">👤</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="realName">真实姓名</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="realName" placeholder="选填">
+                            <span class="input-icon">📝</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="password">密码</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" placeholder="请输入密码">
+                            <span class="input-icon">🔒</span>
+                        </div>
+                        <div class="password-strength">
+                            <span>密码强度：</span>
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthBar"></div>
+                            </div>
+                            <span id="strengthText"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="confirmPassword">确认密码</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="confirmPassword" placeholder="再次输入密码（选填）">
+                            <span class="input-icon">🔐</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="phone">手机号</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="phone" placeholder="选填" pattern="[0-9]{11}">
+                            <span class="input-icon">📱</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="email">邮箱</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" placeholder="选填">
+                            <span class="input-icon">📧</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="gender">性别</label>
+                        <div class="input-wrapper">
+                            <select id="gender">
+                                <option value="">请选择</option>
+                                <option value="male">男</option>
+                                <option value="female">女</option>
+                            </select>
+                            <span class="input-icon">⚥</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="age">年龄</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="age" placeholder="岁" min="1" max="150">
+                            <span class="input-icon">🎂</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="register-btn" id="registerBtn">
+                    立即注册
+                </button>
+            </form>
+            
+            <div class="login-link">
+                已有账号？
+                <a href="login.html">立即登录 →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // 密码强度检查
+        document.getElementById('password').addEventListener('input', (e) => {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            strengthBar.className = 'strength-fill';
+            if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = '弱';
+                strengthText.style.color = '#cf1322';
+            } else if (strength <= 4) {
+                strengthBar.classList.add('strength-medium');
+                strengthText.textContent = '中';
+                strengthText.style.color = '#fa8c16';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = '强';
+                strengthText.style.color = '#52c41a';
+            }
+        });
+        
+        // 注册表单提交
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const realName = document.getElementById('realName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value ? parseInt(document.getElementById('age').value) : null;
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="loading"></span>注册中...';
+            
+            hideMessages();
+            
+            // 构建注册数据（只传递必填项和非空选填项）
+            const registerData = {
+                username,
+                password
+            };
+            
+            // 只添加非空的选填字段
+            if (realName) registerData.real_name = realName;
+            if (phone) registerData.phone = phone;
+            if (email) registerData.email = email;
+            if (gender) registerData.gender = gender;
+            if (age) registerData.age = age;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registerData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('注册成功！即将跳转到登录页面...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    showError(result.message || '注册失败');
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                showError('网络错误，请检查后端服务是否启动');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '立即注册';
+            }
+        });
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+/* 桂在安康 - 统一样式文件 - 老年友好设计 */
+
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+}
+
+:root {
+    --primary-color: #2d8a5f;
+    --primary-dark: #1e6b45;
+    --primary-light: #36a88d;
+    --bg-color: #f2f7f5;
+    --card-bg: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-light: #666666;
+    --border-color: #d0d0d0;
+    --warning-bg: #fff2f0;
+    --warning-border: #ffccc7;
+    --warning-text: #cf1322;
+    --success-color: #52c41a;
+    --info-color: #1890ff;
+    
+    /* 老年友好字体大小 */
+    --font-base: 18px;
+    --font-large: 22px;
+    --font-xl: 28px;
+    --font-xxl: 36px;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-size: var(--font-base);
+    line-height: 1.8;
+    min-height: 100vh;
+}
+
+/* 导航栏样式 */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    padding: 15px 30px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(45, 138, 95, 0.2);
+}
+
+.navbar-brand {
+    color: white;
+    font-size: var(--font-xl);
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-nav {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: var(--font-base);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.nav-btn {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: var(--font-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background: #f5f5f5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 页面容器 */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 卡片样式 */
+.card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+    color: var(--primary-color);
+    font-size: var(--font-large);
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 3px solid var(--primary-light);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+/* 按钮样式 - 老年友好大按钮 */
+.btn {
+    padding: 14px 30px;
+    font-size: var(--font-base);
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(45, 138, 95, 0.3);
+}
+
+.btn-secondary {
+    background: var(--info-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #096dd9;
+}
+
+.btn-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.btn-lg {
+    padding: 18px 40px;
+    font-size: var(--font-large);
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: var(--font-base);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: var(--font-base);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 138, 95, 0.15);
+}
+
+.form-inline {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-inline .form-group {
+    margin-bottom: 0;
+}
+
+/* 预警栏样式 */
+.warning-bar {
+    background: var(--warning-bg);
+    border: 2px solid var(--warning-border);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    display: none;
+}
+
+.warning-bar.show {
+    display: block;
+    animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.warning-bar h3 {
+    color: var(--warning-text);
+    font-size: var(--font-large);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.warning-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--warning-text);
+}
+
+/* 图表容器 */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    height: 420px;
+}
+
+/* 服务卡片 */
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.service-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-light);
+}
+
+.service-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.service-card h3 {
+    color: var(--primary-color);
+    font-size: var(--font-large);
+    margin-bottom: 12px;
+}
+
+.service-card p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+/* 知识卡片 */
+.knowledge-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--primary-color);
+}
+
+.knowledge-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+}
+
+.knowledge-card h3 {
+    color: var(--primary-color);
+    font-size: var(--font-large);
+    margin-bottom: 12px;
+}
+
+.knowledge-tag {
+    display: inline-block;
+    background: var(--primary-light);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+/* 模态框 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--bg-color);
+}
+
+.modal-header h2 {
+    color: var(--primary-color);
+    font-size: var(--font-xl);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-close:hover {
+    background: var(--bg-color);
+    color: var(--text-primary);
+}
+
+/* 页面标题 */
+.page-title {
+    text-align: center;
+    font-size: var(--font-xxl);
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* 登录页面样式 */
+.login-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    width: 100%;
+    max-width: 480px;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.login-box h1 {
+    color: var(--primary-color);
+    font-size: var(--font-xxl);
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.login-box .input-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.login-box .input-group label {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    font-size: var(--font-base);
+    font-weight: 600;
+}
+
+.login-box .input-group input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: var(--font-base);
+    transition: all 0.3s ease;
+}
+
+.login-box .input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 138, 95, 0.15);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: var(--font-large);
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 138, 95, 0.3);
+}
+
+.login-tip {
+    margin-top: 20px;
+    color: var(--text-light);
+    font-size: 16px;
+    padding: 15px;
+    background: var(--bg-color);
+    border-radius: 8px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    :root {
+        --font-base: 16px;
+        --font-large: 20px;
+        --font-xl: 24px;
+        --font-xxl: 30px;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .navbar-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .chart-grid,
+    .service-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .chart-card {
+        height: 350px;
+    }
+}
+
+/* 工具类 */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* 打印样式 */
+@media print {
+    .navbar,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+}

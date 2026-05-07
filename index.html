@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桂在安康 - 欢迎</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .welcome-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2d8a5f 0%, #36a88d 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .welcome-logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .welcome-subtitle {
+            font-size: 24px;
+            margin-bottom: 50px;
+            opacity: 0.95;
+        }
+        
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto 50px;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+        
+        .welcome-btn {
+            background: white;
+            color: #2d8a5f;
+            padding: 20px 60px;
+            font-size: 22px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .welcome-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="welcome-logo">🌿</div>
+        <h1 class="welcome-title">桂在安康</h1>
+        <p class="welcome-subtitle">个人健康监测平台 - 关爱老年健康，守护幸福生活</p>
+        
+        <div class="welcome-features">
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">健康数据管理</div>
+                <div class="feature-desc">血压、血糖、睡眠、体重等多项健康指标记录与分析</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⚠️</div>
+                <div class="feature-title">智能预警系统</div>
+                <div class="feature-desc">实时监测健康数据，异常自动预警，推送家属和医生</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🏥</div>
+                <div class="feature-title">社区服务对接</div>
+                <div class="feature-desc">上门体检预约、健康咨询、养老机构查询一站式服务</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">健康知识库</div>
+                <div class="feature-desc">广西特色健康知识，药食同源养生智慧，疾病护理指南</div>
+            </div>
+        </div>
+        
+        <button class="welcome-btn" onclick="enterSite()">进入平台 →</button>
+    </div>
+
+    <script>
+        // 检查登录状态
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                // 已登录，直接跳转到主页
+                window.location.href = 'home.html';
+            }
+        });
+
+        function enterSite() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
