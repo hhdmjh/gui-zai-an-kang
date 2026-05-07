@@ -766,120 +766,69 @@
         }
 
         // 重置今日数据
-        async function resetTodayData() {
+        function resetTodayData() {
             if (!confirm('确定要重置今日数据吗？此操作不可恢复！')) {
                 return;
             }
             
             const today = new Date().toISOString().split('T')[0];
-            const token = localStorage.getItem('token');
             
-            try {
-                const response = await fetch(`${API_BASE_URL}/health-data/today`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success && result.data && result.data.length > 0) {
-                    // 删除今日所有记录
-                    for (const record of result.data) {
-                        await fetch(`${API_BASE_URL}/health-data/${record.id}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-                    }
-                    
-                    alert('✅ 今日数据已重置！请重新录入数据。');
-                    // 清空健康数据数组
-                    healthData = [];
-                    // 重新加载数据（会是空数据）
-                    loadHealthData();
-                    loadStatistics();
-                } else {
-                    alert('ℹ️ 今日暂无数据记录');
-                }
-            } catch (error) {
-                console.error('重置失败:', error);
-                alert('❌ 重置失败，请重试');
-            }
+            // 从 LocalStorage 删除今日数据
+            let healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            const filtered = healthData.filter(item => item.date !== today);
+            
+            localStorage.setItem('healthData', JSON.stringify(filtered));
+            
+            alert('✅ 今日数据已重置！请重新录入数据。');
+            
+            // 更新本地数据
+            healthData = filtered;
+            loadHealthData();
+            loadStatistics();
         }
 
         // 清空所有数据
-        async function resetAllData() {
+        function resetAllData() {
             if (!confirm('⚠️ 警告：确定要清空所有健康数据吗？此操作不可恢复！\n\n点击"确定"删除所有数据，点击"取消"保留数据。')) {
                 return;
             }
             
-            const token = localStorage.getItem('token');
+            // 清空 LocalStorage
+            localStorage.removeItem('healthData');
+            localStorage.removeItem('appointments');
+            localStorage.removeItem('contacts');
+            localStorage.removeItem('notifications');
             
-            try {
-                // 使用批量删除 API
-                const response = await fetch(`${API_BASE_URL}/health-data`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    alert(`✅ 已成功删除所有数据！请重新录入数据。`);
-                    // 清空健康数据数组
-                    healthData = [];
-                    // 重新加载数据（会是空数据）
-                    loadHealthData();
-                    loadStatistics();
-                } else {
-                    alert('ℹ️ 暂无数据可删除');
-                }
-            } catch (error) {
-                console.error('清空失败:', error);
-                alert('❌ 清空失败，请重试');
-            }
+            alert(`✅ 已成功删除所有数据！请重新录入数据。`);
+            
+            // 更新本地数据
+            healthData = [];
+            loadHealthData();
+            loadStatistics();
         }
 
         // 导出数据
-        async function exportData() {
-            const token = localStorage.getItem('token');
+        function exportData() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
             
-            try {
-                const response = await fetch(`${API_BASE_URL}/health-data`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success && result.data && result.data.length > 0) {
-                    let csvContent = '日期，收缩压，舒张压，血糖，睡眠，体重，运动\n';
-                    
-                    result.data.forEach(row => {
-                        csvContent += `${row.record_date},${row.systolic},${row.diastolic},${row.blood_sugar},${row.sleep},${row.weight},${row.sport}\n`;
-                    });
-                    
-                    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement('a');
-                    const url = URL.createObjectURL(blob);
-                    
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', `健康数据_${new Date().toISOString().split('T')[0]}.csv`);
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    alert(`✅ 已导出 ${result.data.length} 条记录！`);
-                } else {
-                    alert('ℹ️ 暂无数据可导出');
-                }
-            } catch (error) {
-                console.error('导出失败:', error);
-                alert('❌ 导出失败，请重试');
+            if (healthData.length === 0) {
+                alert('ℹ️ 暂无数据可导出');
+                return;
             }
+            
+            let csvContent = '日期，收缩压，舒张压，血糖，睡眠，体重，运动\n';
+            
+            healthData.forEach(row => {
+                csvContent += `${row.date},${row.systolic},${row.diastolic},${row.bloodSugar},${row.sleep},${row.weight},${row.sport}\n`;
+            });
+            
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `健康数据_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            alert('✅ 数据导出成功！');
         }
 
         // 显示生成图表对话框
