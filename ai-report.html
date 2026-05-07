@@ -293,12 +293,12 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // 纯前端模式
         
         // 检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
                 window.location.href = 'login.html';
                 return;
             }
@@ -309,33 +309,93 @@
         // 退出登录
         document.getElementById('logoutBtn').onclick = function() {
             if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             }
         }
 
         // 生成 AI 报告
-        async function generateAIReport() {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_BASE_URL}/health-data`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success && result.data.length > 0) {
-                    const healthData = result.data.map(item => ({
-                        date: item.record_date,
-                        systolic: parseFloat(item.systolic),
-                        diastolic: parseFloat(item.diastolic),
-                        bloodSugar: parseFloat(item.blood_sugar),
-                        sleep: parseFloat(item.sleep),
-                        weight: parseFloat(item.weight),
-                        sport: parseInt(item.sport)
-                    }));
+        function generateAIReport() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            
+            if (healthData.length === 0) {
+                document.getElementById('loadingReport').innerHTML = '<p>暂无健康数据，请先录入数据</p>';
+                return;
+            }
+            
+            // 计算健康评分
+            const report = calculateHealthScore(healthData);
+            displayReport(report);
+        }
+        
+        // 计算健康评分
+        function calculateHealthScore(data) {
+            let score = 100;
+            const latest = data[data.length - 1];
+            
+            // 血压评分
+            if (latest.systolic >= 140) score -= 15;
+            if (latest.diastolic >= 90) score -= 10;
+            
+            // 血糖评分
+            if (latest.bloodSugar >= 7.0) score -= 15;
+            
+            // 睡眠评分
+            if (latest.sleep < 6) score -= 10;
+            if (latest.sleep > 9) score -= 5;
+            
+            // 体重评分（简化）
+            if (latest.weight >= 110) score -= 5;
+            
+            return {
+                score: Math.max(0, Math.min(100, score)),
+                data: latest,
+                suggestions: generateSuggestions(latest, score)
+            };
+        }
+        
+        // 生成健康建议
+        function generateSuggestions(data, score) {
+            let suggestions = [];
+            
+            if (data.systolic >= 140 || data.diastolic >= 90) {
+                suggestions.push('⚠️ 血压偏高，建议低盐饮食，定期监测');
+            }
+            if (data.bloodSugar >= 7.0) {
+                suggestions.push('⚠️ 血糖偏高，建议控制糖分摄入');
+            }
+            if (data.sleep < 6) {
+                suggestions.push('😴 睡眠不足，建议早睡早起，保证 7-8 小时睡眠');
+            }
+            if (data.weight >= 110) {
+                suggestions.push('🏃 体重超标，建议适量运动');
+            }
+            if (score >= 80) {
+                suggestions.push('✅ 整体健康状况良好，继续保持！');
+            }
+            
+            return suggestions;
+        }
+        
+        // 显示报告
+        function displayReport(report) {
+            document.getElementById('loadingReport').style.display = 'none';
+            document.getElementById('reportContent').style.display = 'block';
+            
+            document.getElementById('healthScore').textContent = report.score;
+            
+            const scoreElement = document.getElementById('healthScore');
+            if (report.score >= 80) {
+                scoreElement.style.color = '#52c41a';
+            } else if (report.score >= 60) {
+                scoreElement.style.color = '#fa8c16';
+            } else {
+                scoreElement.style.color = '#cf1322';
+            }
+            
+            document.getElementById('healthAdvice').innerHTML = report.suggestions.map(s => `<p>${s}</p>`).join('');
+        }
                     
                     const report = analyzeHealthData(healthData);
                     displayReport(report);

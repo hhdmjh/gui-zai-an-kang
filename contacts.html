@@ -159,12 +159,12 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // 纯前端模式
         
         // 检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
                 window.location.href = 'login.html';
                 return;
             }
@@ -175,28 +175,24 @@
         // 退出登录
         document.getElementById('logoutBtn').onclick = function() {
             if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             }
         };
         
         // 加载联系人列表
-        async function loadContacts() {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_BASE_URL}/contacts`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                
-                document.getElementById('loadingContacts').style.display = 'none';
-                
-                if (result.success && result.data.length > 0) {
-                    displayContacts(result.data);
+        function loadContacts() {
+            let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            
+            document.getElementById('loadingContacts').style.display = 'none';
+            
+            if (contacts.length > 0) {
+                displayContacts(contacts);
+            } else {
+                document.getElementById('contactList').innerHTML = '<p style="text-align:center;color:#999;">暂无联系人，请点击添加</p>';
+            }
+        }
                 } else {
                     showEmptyState();
                 }

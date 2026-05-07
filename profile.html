@@ -338,12 +338,11 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
-        
+        // 纯前端模式
         // 检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
                 window.location.href = 'login.html';
                 return;
             }
@@ -352,30 +351,18 @@
         });
 
         // 加载用户信息
-        async function loadUserProfile() {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_BASE_URL}/user/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    displayUserProfile(result.data);
-                    document.getElementById('loadingInfo').style.display = 'none';
-                    document.getElementById('profileInfo').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('加载用户信息失败:', error);
-                showMessage('加载失败，请刷新重试', 'error');
+        function loadUserProfile() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (currentUser) {
+                displayUserProfile(currentUser);
+                document.getElementById('loadingInfo').style.display = 'none';
+                document.getElementById('profileInfo').style.display = 'block';
             }
         }
 
         // 显示用户信息
         function displayUserProfile(user) {
-            document.getElementById('profileName').textContent = user.real_name || user.username;
+            document.getElementById('profileName').textContent = user.name || user.username;
             document.getElementById('profileRole').textContent = user.role === 'admin' ? '管理员' : '普通会员';
             
             document.getElementById('infoUsername').textContent = user.username;

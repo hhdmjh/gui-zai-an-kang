@@ -125,56 +125,38 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // 纯前端模式
         
         // 检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
                 window.location.href = 'login.html';
                 return;
             }
             
             loadNotifications();
-            loadUnreadCount();
         });
         
         // 退出登录
         document.getElementById('logoutBtn').onclick = function() {
             if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             }
         };
         
         // 加载通知列表
-        async function loadNotifications() {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_BASE_URL}/notifications`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                
-                document.getElementById('loadingNotifications').style.display = 'none';
-                
-                if (result.success && result.data.length > 0) {
-                    displayNotifications(result.data);
-                } else {
-                    showEmptyState();
-                }
-            } catch (error) {
-                console.error('加载通知失败:', error);
-                document.getElementById('notificationList').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <p>加载失败，请刷新重试</p>
-                    </div>
-                `;
+        function loadNotifications() {
+            let notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            
+            document.getElementById('loadingNotifications').style.display = 'none';
+            
+            if (notifications.length > 0) {
+                displayNotifications(notifications);
+            } else {
+                showEmptyState();
             }
         }
         
