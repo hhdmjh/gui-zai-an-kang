@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 报告调试</title>
+    <style>
+        body { padding: 20px; font-family: Arial; }
+        .debug { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .score { font-size: 48px; font-weight: bold; }
+        .good { color: #52c41a; }
+        .medium { color: #fa8c16; }
+        .bad { color: #cf1322; }
+    </style>
+</head>
+<body>
+    <h1>🤖 AI 健康报告调试</h1>
+    
+    <div class="debug">
+        <h3>步骤 1: 检查数据</h3>
+        <button onclick="checkData()">检查 LocalStorage 数据</button>
+        <div id="dataInfo"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>步骤 2: 测试评分计算</h3>
+        <button onclick="testScore()">计算健康评分</button>
+        <div id="scoreInfo"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>步骤 3: 生成建议</h3>
+        <button onclick="generateAdvice()">生成健康建议</button>
+        <div id="adviceInfo"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>步骤 4: 完整报告</h3>
+        <button onclick="fullReport()">生成完整报告</button>
+        <div id="fullReportInfo"></div>
+    </div>
+    
+    <script>
+        // 检查数据
+        function checkData() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            
+            document.getElementById('dataInfo').innerHTML = `
+                <p>登录状态：${isLoggedIn || '❌ 未登录'}</p>
+                <p>数据条数：${healthData.length}</p>
+                <p>数据内容：<pre>${JSON.stringify(healthData, null, 2)}</pre></p>
+            `;
+        }
+        
+        // 测试评分计算
+        function testScore() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            
+            if (healthData.length === 0) {
+                document.getElementById('scoreInfo').innerHTML = '<p style="color: #fa8c16;">⚠️ 暂无数据</p>';
+                return;
+            }
+            
+            const latest = healthData[healthData.length - 1];
+            let score = 100;
+            let details = [];
+            
+            // 血压评分
+            if (latest.systolic >= 140) {
+                score -= 15;
+                details.push('血压偏高 -15');
+            }
+            if (latest.diastolic >= 90) {
+                score -= 10;
+                details.push('舒张压偏高 -10');
+            }
+            
+            // 血糖评分
+            if (latest.bloodSugar >= 7.0) {
+                score -= 15;
+                details.push('血糖偏高 -15');
+            }
+            
+            // 睡眠评分
+            if (latest.sleep < 6) {
+                score -= 10;
+                details.push('睡眠不足 -10');
+            }
+            if (latest.sleep > 9) {
+                score -= 5;
+                details.push('睡眠过长 -5');
+            }
+            
+            // 体重评分
+            if (latest.weight >= 110) {
+                score -= 5;
+                details.push('体重超标 -5');
+            }
+            
+            const finalScore = Math.max(0, Math.min(100, score));
+            
+            document.getElementById('scoreInfo').innerHTML = `
+                <p>最新数据：${JSON.stringify(latest)}</p>
+                <p>扣分详情：${details.join(', ') || '无扣分'}</p>
+                <p class="score ${finalScore >= 80 ? 'good' : finalScore >= 60 ? 'medium' : 'bad'}">
+                    健康评分：${finalScore}分
+                </p>
+            `;
+        }
+        
+        // 生成建议
+        function generateAdvice() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            
+            if (healthData.length === 0) {
+                document.getElementById('adviceInfo').innerHTML = '<p style="color: #fa8c16;">⚠️ 暂无数据</p>';
+                return;
+            }
+            
+            const latest = healthData[healthData.length - 1];
+            let score = 100;
+            let suggestions = [];
+            
+            if (latest.systolic >= 140 || latest.diastolic >= 90) {
+                suggestions.push('⚠️ 血压偏高，建议低盐饮食，定期监测');
+            }
+            if (latest.bloodSugar >= 7.0) {
+                suggestions.push('⚠️ 血糖偏高，建议控制糖分摄入');
+            }
+            if (latest.sleep < 6) {
+                suggestions.push('😴 睡眠不足，建议早睡早起，保证 7-8 小时睡眠');
+            }
+            if (latest.weight >= 110) {
+                suggestions.push('🏃 体重超标，建议适量运动');
+            }
+            
+            // 计算分数
+            if (latest.systolic >= 140) score -= 15;
+            if (latest.diastolic >= 90) score -= 10;
+            if (latest.bloodSugar >= 7.0) score -= 15;
+            if (latest.sleep < 6) score -= 10;
+            if (latest.sleep > 9) score -= 5;
+            if (latest.weight >= 110) score -= 5;
+            
+            if (score >= 80) {
+                suggestions.push('✅ 整体健康状况良好，继续保持！');
+            }
+            
+            document.getElementById('adviceInfo').innerHTML = `
+                <h4>健康建议：</h4>
+                <ul>
+                    ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+            `;
+        }
+        
+        // 完整报告
+        function fullReport() {
+            const healthData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            
+            if (healthData.length === 0) {
+                document.getElementById('fullReportInfo').innerHTML = '<p style="color: #fa8c16;">⚠️ 暂无健康数据，请先录入数据</p>';
+                return;
+            }
+            
+            const latest = healthData[healthData.length - 1];
+            let score = 100;
+            let suggestions = [];
+            
+            // 计算评分
+            if (latest.systolic >= 140) score -= 15;
+            if (latest.diastolic >= 90) score -= 10;
+            if (latest.bloodSugar >= 7.0) score -= 15;
+            if (latest.sleep < 6) score -= 10;
+            if (latest.sleep > 9) score -= 5;
+            if (latest.weight >= 110) score -= 5;
+            
+            const finalScore = Math.max(0, Math.min(100, score));
+            
+            // 生成建议
+            if (latest.systolic >= 140 || latest.diastolic >= 90) {
+                suggestions.push('⚠️ 血压偏高，建议低盐饮食，定期监测');
+            }
+            if (latest.bloodSugar >= 7.0) {
+                suggestions.push('⚠️ 血糖偏高，建议控制糖分摄入');
+            }
+            if (latest.sleep < 6) {
+                suggestions.push('😴 睡眠不足，建议早睡早起，保证 7-8 小时睡眠');
+            }
+            if (latest.weight >= 110) {
+                suggestions.push('🏃 体重超标，建议适量运动');
+            }
+            if (finalScore >= 80) {
+                suggestions.push('✅ 整体健康状况良好，继续保持！');
+            }
+            
+            document.getElementById('fullReportInfo').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <p style="font-size: 24px; margin-bottom: 10px;">🤖 AI 健康报告</p>
+                    <p class="score ${finalScore >= 80 ? 'good' : finalScore >= 60 ? 'medium' : 'bad'}">
+                        ${finalScore}分
+                    </p>
+                    <p>${finalScore >= 80 ? '优秀' : finalScore >= 60 ? '良好' : '需改善'}</p>
+                </div>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h4>最新数据：</h4>
+                    <p>血压：${latest.systolic}/${latest.diastolic} mmHg</p>
+                    <p>血糖：${latest.bloodSugar} mmol/L</p>
+                    <p>睡眠：${latest.sleep} 小时</p>
+                    <p>体重：${latest.weight} 斤</p>
+                </div>
+                <div style="background: #f0f9f4; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h4>健康建议：</h4>
+                    <ul>
+                        ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button onclick="window.location.href='ai-report.html'">打开正式版 AI 报告</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

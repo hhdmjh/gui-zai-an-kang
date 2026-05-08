@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桂在安康 - 访问二维码</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #2d8a5f 0%, #36a88d 100%);
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2d8a5f;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        #qrcode {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+        .url {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-size: 14px;
+        }
+        .tips {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .tips h3 {
+            color: #2d8a5f;
+            margin-top: 0;
+        }
+        .tips ul {
+            padding-left: 20px;
+        }
+        .tips li {
+            margin: 8px 0;
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #2d8a5f;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 5px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #36a88d;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🌿 桂在安康</h1>
+        <p class="subtitle">广西社区健康智能检测与预警系统</p>
+        
+        <div id="qrcode"></div>
+        
+        <div class="url">
+            <strong>访问网址：</strong><br>
+            https://hhdmjh.github.io/gui-zai-an-kang/
+        </div>
+        
+        <div>
+            <a href="https://hhdmjh.github.io/gui-zai-an-kang/" class="btn" target="_blank">🔗 直接访问</a>
+            <button class="btn" onclick="window.print()">🖨️ 打印二维码</button>
+        </div>
+        
+        <div class="tips">
+            <h3>📱 使用说明：</h3>
+            <ul>
+                <li><strong>手机扫码：</strong>使用微信、QQ 或浏览器扫描二维码</li>
+                <li><strong>添加到桌面：</strong>访问后点击浏览器菜单 → "添加到主屏幕"</li>
+                <li><strong>比赛评审：</strong>可直接扫描此二维码访问作品</li>
+                <li><strong>截图保存：</strong>可以截图此页面保存二维码</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        // 生成二维码
+        new QRCode(document.getElementById("qrcode"), {
+            text: "https://hhdmjh.github.io/gui-zai-an-kang/",
+            width: 256,
+            height: 256,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    </script>
+</body>
+</html>

@@ -1,33 +1,21 @@
 {
-  "name": "gui-zai-an-kang-backend",
+  "name": "gui-an-kang-backend",
   "version": "1.0.0",
-  "description": "桂在安康 - 后端服务",
+  "description": "桂在安康 - 后端 API 服务",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
-    "init-db": "node database/init-db.js"
+    "dev": "nodemon server.js"
   },
-  "keywords": [
-    "health",
-    "express",
-    "mysql"
-  ],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-validator": "^7.0.1",
+    "cors": "^2.8.5",
+    "sql.js": "^1.10.3",
+    "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "localtunnel": "^2.0.2",
-    "mysql2": "^3.6.5",
-    "node-cron": "^3.0.3"
+    "dotenv": "^16.3.1"
   },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
